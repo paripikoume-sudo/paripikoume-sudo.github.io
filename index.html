@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>陸上選手名鑑 牧野祥英</title>
+<meta name="description" content="牧野祥英の陸上競技の記録（2017〜2022年）。主な実績、自己ベスト、出場した大会の一覧。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* 名鑑の紙面：生成りの紙に紺のインク、ゼッケンの朱。左に選手カード、右に数字。狭い画面では1列 */
+:root{
+  --paper:#F3F1EA;
+  --card:#FFFFFF;
+  --ink:#14213D;
+  --muted:#5D6578;
+  --rule:#D8D4C7;
+  --accent:#D94A1E;
+  --accent-soft:#F6E0D6;
+  --display:"Barlow Condensed","Zen Kaku Gothic New",system-ui,sans-serif;
+  --body:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.7}
+a{color:var(--ink);text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+/* 上の帯 */
+.masthead{background:var(--ink);color:var(--paper)}
+.masthead .wrap{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding-top:14px;padding-bottom:12px;flex-wrap:wrap}
+.masthead .series{font-family:var(--display);letter-spacing:.18em;font-size:14px;font-weight:600}
+.masthead .vol{font-size:13px;opacity:.8}
+.lanes{height:10px;background:repeating-linear-gradient(90deg,var(--accent) 0 60px,var(--paper) 60px 62px)}
+
+/* 選手カード */
+.hero{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:28px;padding:32px 0 8px}
+.player{background:var(--card);border:1px solid var(--rule);border-top:6px solid var(--accent);padding:24px}
+.bib{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:112px;height:84px;border:2px solid var(--ink);border-radius:6px;margin-bottom:18px;background:var(--paper)}
+.bib small{font-size:10px;letter-spacing:.2em;color:var(--muted)}
+.bib b{font-family:var(--display);font-size:44px;line-height:1;font-weight:700}
+.kana{font-size:13px;letter-spacing:.3em;color:var(--muted);margin:0}
+h1{font-size:44px;line-height:1.15;margin:2px 0 4px;font-weight:900;letter-spacing:.06em;text-wrap:balance}
+.roman{font-family:var(--display);font-size:20px;letter-spacing:.14em;margin:0 0 18px;color:var(--muted)}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0;font-weight:500}
+
+.highlights h2,.section h2{font-size:22px;margin:0 0 12px;font-weight:900;display:flex;align-items:center;gap:10px}
+.section h2::before,.highlights h2::before{content:"";width:6px;height:22px;background:var(--accent)}
+.honors{list-style:none;margin:0 0 22px;padding:0;display:grid;gap:8px}
+.honors li{background:var(--card);border:1px solid var(--rule);padding:10px 14px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:baseline}
+.honors li.final{background:var(--accent-soft);border-color:var(--accent);border-left:6px solid var(--accent)}
+.honors .yr{font-family:var(--display);font-weight:700;font-size:18px;color:var(--accent)}
+.honors .what{font-weight:700}
+.honors .where{grid-column:2;font-size:13px;color:var(--muted)}
+
+/* 自己ベスト */
+.pbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.pb{background:var(--card);border:1px solid var(--rule);padding:12px 14px}
+.pb .ev{font-size:13px;color:var(--muted);font-weight:700}
+.pb .mark{font-family:var(--display);font-size:38px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.pb .meta{font-size:12px;color:var(--muted);line-height:1.5}
+.pb.star{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.pb.star .ev::after{content:" 専門種目";color:var(--accent)}
+
+.section{padding:30px 0 6px}
+.lead{margin:-4px 0 14px;color:var(--muted);font-size:14px;max-width:65ch}
+
+
+/* 年表 */
+.filters button{font:inherit;font-size:14px;font-weight:700;padding:6px 14px;border:1px solid var(--ink);background:var(--card);color:var(--ink);cursor:pointer;border-radius:999px}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.year{margin-bottom:18px}
+.year h3{font-size:16px;margin:0 0 6px;display:flex;gap:10px;align-items:baseline}
+.year h3 .g{font-family:var(--display);font-size:22px;color:var(--accent)}
+.year h3 .y{font-size:13px;color:var(--muted);font-weight:500}
+.tablewrap{overflow-x:auto;background:var(--card);border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:12px;color:var(--muted);font-weight:700;background:var(--paper)}
+td.num{font-family:var(--display);font-size:19px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.date{white-space:nowrap;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:3px;margin-left:6px;vertical-align:2px;white-space:nowrap}
+.tag.pb{background:var(--accent);color:#fff}
+.tag.relay{background:var(--accent-soft);color:var(--ink)}
+.res{color:var(--muted)}
+.res.top{color:var(--ink);font-weight:700}
+tr.fin td{background:var(--accent-soft)}
+tr.fin .res{color:var(--accent);font-weight:900}
+
+footer{border-top:1px solid var(--rule);margin-top:30px;padding:20px 0 40px;font-size:13px;color:var(--muted)}
+footer ul{margin:6px 0;padding-left:1.2em}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}
+  h1{font-size:38px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <span class="series">ATHLETE FILE ／ 陸上選手名鑑</span>
+    <span class="vol">陸上競技　2017–2022</span>
+  </div>
+  <div class="lanes" aria-hidden="true"></div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" aria-label="選手プロフィール">
+    <div class="player">
+      <p class="kana">マキノ ショウエイ</p>
+      <h1>牧野 祥英</h1>
+      <p class="roman">MAKINO SHOEI</p>
+      <dl class="facts">
+        <dt>種目</dt><dd>100m・200m・300m・400m・800m・リレー</dd>
+        <dt>競技歴</dt><dd>2017〜2022年（中学3年間・高校3年間）</dd>
+        <dt>地域</dt><dd>愛知県（名古屋地区）</dd>
+        <dt>出場記録</dt><dd id="count">—</dd>
+      </dl>
+    </div>
+
+    <div>
+      <div class="highlights">
+        <h2>主な実績</h2>
+        <ul class="honors">
+          <li><span class="yr">2018</span><span class="what">4×100mリレー　名古屋地区予選 入賞（県大会へ）</span><span class="where">全日本中学校通信陸上競技 愛知県大会 名古屋地区予選（中学2年）</span></li>
+          <li><span class="yr">2019</span><span class="what">名古屋市中学校郵政駅伝　3区 区間8位（9:26）・県駅伝出場</span><span class="where">第69回 名古屋市中学校郵政駅伝（中学3年）</span></li>
+          <li><span class="yr">2019</span><span class="what">200m・4×100mリレー　名古屋地区予選 入賞（県大会へ）</span><span class="where">全日本中学校通信陸上競技 愛知県大会 名古屋地区予選（中学3年）</span></li>
+          <li class="final"><span class="yr">2019</span><span class="what">共通男子200m　県大会 決勝8位</span><span class="where">全日本中学校通信陸上競技 愛知県大会（中学3年）</span></li>
+          <li><span class="yr">2021</span><span class="what">男子4×400mリレー　名古屋地区予選 入賞（県新人大会へ）</span><span class="where">愛知県高等学校新人体育大会 名古屋地区予選（高校2年）</span></li>
+          <li class="final"><span class="yr">2021</span><span class="what">男子4×400mリレー　県新人大会 7位入賞</span><span class="where">愛知県高等学校新人体育大会（高校2年）</span></li>
+          <li><span class="yr">2022</span><span class="what">男子400m・4×400mリレー　名古屋地区予選 入賞（県大会へ）</span><span class="where">第76回 愛知県高等学校総合体育大会 名古屋地区予選（高校3年）</span></li>
+          <li class="final"><span class="yr">2022</span><span class="what">男子4×400mリレー　県大会 決勝8位</span><span class="where">第76回 愛知県高等学校総合体育大会（高校3年）</span></li>
+          <li><span class="yr">2022</span><span class="what">男子400m　県大会 準決勝進出（自己ベスト50.34）</span><span class="where">第76回 愛知県高等学校総合体育大会（高校3年）</span></li>
+        </ul>
+      </div>
+      <div class="highlights"><h2>自己ベスト</h2></div>
+      <div class="pbs" id="pbs"></div>
+    </div>
+  </section>
+
+
+  <section class="section" aria-labelledby="h-list">
+    <h2 id="h-list">大会記録一覧</h2>
+    <p class="lead">公開されている大会結果で確認できたレースを、学年ごとに並べています。<span class="tag pb">PB</span>はその時点の自己ベストです。</p>
+    <div class="filters" role="group" aria-label="表示する記録" id="filters">
+      <button type="button" data-f="all" aria-pressed="true">すべて</button>
+      <button type="button" data-f="ind" aria-pressed="false">個人種目</button>
+      <button type="button" data-f="relay" aria-pressed="false">リレー</button>
+    </div>
+    <div id="years"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>記録の出典（公開されている大会結果）</p>
+    <ul>
+      <li><a href="https://www.aichi-rk.jp/">一般財団法人 愛知陸上競技協会</a>（各年度の大会結果PDF）</li>
+      <li><a href="https://blog.neet-shikakugets.com/aichi-koukou-sotai-2022">愛知県高校総体陸上 2022 結果</a></li>
+    </ul>
+    <p>風速と順位は結果PDFから読み取ったものです。（＋）は追い風、（−）は向かい風を表します。</p>
+  </div>
+</footer>
+
+<script>
+/* ===== 記録データ（ここに1行足すと、表・自己ベスト・グラフがすべて更新されます） =====
+   g: 学年 / d: 日付 / meet: 大会 / ev: 種目 / rd: ラウンド / t: 記録 / w: 風速 / res: 結果 / relay: リレーなら true */
+const RECORDS = [
+  {g:"中1",d:"2017-08-26",meet:"名古屋市民スポーツ祭",ev:"4×100mR",rd:"タイムレース",t:"52.30",res:"組4着",relay:true},
+  {g:"中1",d:"2017-08-27",meet:"名古屋市民スポーツ祭",ev:"400m",rd:"予選",t:"1:06.54",res:"組5着"},
+
+  {g:"中2",d:"2018-04-15",meet:"国体選手選考強化競技会",ev:"100m",rd:"タイムレース",t:"12.63",w:"+2.5",res:"組2着"},
+  {g:"中2",d:"2018-04-15",meet:"国体選手選考強化競技会",ev:"4×100mR",rd:"タイムレース",t:"47.64",res:"組2着",relay:true},
+  {g:"中2",d:"2018",meet:"名古屋地区陸上競技会",ev:"100m",rd:"Cクラス",t:"12.75",res:"組2着"},
+  {g:"中2",d:"2018",meet:"名古屋地区陸上競技会",ev:"200m",rd:"Cクラス",t:"26.63",res:"組6着"},
+  {g:"中2",d:"2018",meet:"名古屋地区陸上競技会",ev:"4×100mR",rd:"タイムレース",t:"46.93",res:"組1着",relay:true},
+  {g:"中2",d:"2018-07",meet:"全日本中学校通信陸上 愛知県大会",ev:"4×100mR",rd:"予選",t:"45.46",res:"組1着",relay:true},
+  {g:"中2",d:"2018-08-25",meet:"名古屋市民スポーツ祭",ev:"100m",rd:"タイムレース",t:"12.70",w:"-1.5",res:"組6着"},
+  {g:"中2",d:"2018-08-25",meet:"名古屋市民スポーツ祭",ev:"4×100mR",rd:"タイムレース",t:"49.91",res:"組5着",relay:true},
+
+  {g:"中3",d:"2019-04-06",meet:"名古屋クラス別陸上",ev:"100m",rd:"Bクラス 予選",t:"11.83",w:"+1.1",res:"組4着"},
+  {g:"中3",d:"2019-04-06",meet:"名古屋クラス別陸上",ev:"400m",rd:"Cクラス",t:"56.11",res:"組3着"},
+  {g:"中3",d:"2019-04-06",meet:"名古屋クラス別陸上",ev:"4×100mR",rd:"タイムレース",t:"DQ",res:"失格",relay:true},
+  {g:"中3",d:"2019-04-07",meet:"名古屋クラス別陸上",ev:"4×400mR",rd:"タイムレース",t:"3:53.56",res:"組3着",relay:true},
+  {g:"中3",d:"2019-04-13",meet:"名古屋春季陸上",ev:"100m",rd:"タイムレース",t:"11.95",w:"-0.5",res:"組4着"},
+  {g:"中3",d:"2019-04-13",meet:"名古屋春季陸上",ev:"4×100mR",rd:"タイムレース",t:"47.29",res:"組3着",relay:true},
+  {g:"中3",d:"2019-04-14",meet:"名古屋春季陸上",ev:"4×400mR",rd:"タイムレース",t:"3:50.86",res:"組2着",relay:true},
+  {g:"中3",d:"2019-07-06",meet:"愛知県ジュニア・高校混成競技 併催種目",ev:"200m",rd:"Aクラス",t:"23.61",w:"+1.3",res:"組7着"},
+  {g:"中3",d:"2019-07",meet:"全日本中学校通信陸上 愛知県大会",ev:"100m",rd:"3年 予選",t:"11.70",w:"+1.1",res:"組6着"},
+  {g:"中3",d:"2019-07",meet:"全日本中学校通信陸上 愛知県大会",ev:"200m",rd:"予選",t:"23.35",w:"+0.6",res:"組3着・決勝へ"},
+  {g:"中3",d:"2019-07",meet:"全日本中学校通信陸上 愛知県大会",ev:"200m",rd:"決勝",t:"23.77",w:"-1.7",res:"8位",fin:true,top:true},
+  {g:"中3",d:"2019-07",meet:"全日本中学校通信陸上 愛知県大会",ev:"4×100mR",rd:"予選",t:"46.80",res:"組6着",relay:true},
+  {g:"中3",d:"2019-08-31",meet:"愛知県ジュニアオリンピック選考",ev:"200m",rd:"A男子 予選",t:"23.06",w:"0.0",res:"組4着"},
+
+  {g:"高1",d:"2020",meet:"愛知県高校新人体育大会",ev:"4×100mR",rd:"予選",t:"DQ",res:"失格",relay:true},
+  {g:"高1",d:"2020-10-03",meet:"名古屋秋季陸上",ev:"100m",rd:"タイムレース",t:"11.76",w:"-0.3",res:"組6着"},
+  {g:"高1",d:"2020-10-17",meet:"名古屋陸上競技協会 選手権",ev:"4×100mR",rd:"タイムレース",t:"44.06",res:"総合7位",relay:true},
+  {g:"高1",d:"2020-10-18",meet:"名古屋陸上競技協会 選手権",ev:"200m",rd:"予選",t:"23.54",w:"+1.7",res:"組5着"},
+  {g:"高1",d:"2021-03-21",meet:"名古屋プレシーズンゲーム",ev:"4×100mR",rd:"タイムレース",t:"44.89",res:"総合5位",relay:true},
+
+  {g:"高2",d:"2021-04-03",meet:"名古屋クラス別陸上",ev:"200m",rd:"Aクラス 予選",t:"23.41",w:"-1.5",res:"組1着・決勝へ"},
+  {g:"高2",d:"2021-04-03",meet:"名古屋クラス別陸上",ev:"200m",rd:"Aクラス 決勝",t:"23.38",w:"-1.5",res:"総合14位"},
+  {g:"高2",d:"2021-04-03",meet:"名古屋クラス別陸上",ev:"4×100mR",rd:"タイムレース",t:"43.96",res:"組4着",relay:true},
+  {g:"高2",d:"2021-04-04",meet:"名古屋クラス別陸上",ev:"4×400mR",rd:"タイムレース",t:"3:30.64",res:"組1着",relay:true},
+  {g:"高2",d:"2021-04-10",meet:"名古屋クラス別陸上",ev:"100m",rd:"Aクラス 予選",t:"11.42",w:"+1.4",res:"組4着"},
+  {g:"高2",d:"2021-04-10",meet:"名古屋クラス別陸上",ev:"4×100mR",rd:"タイムレース",t:"43.86",res:"組3着",relay:true},
+  {g:"高2",d:"2021-04-11",meet:"名古屋クラス別陸上",ev:"4×400mR",rd:"タイムレース",t:"3:28.75",res:"総合7位",relay:true},
+  {g:"高2",d:"2021-06-12",meet:"名古屋地区夏季陸上",ev:"200m",rd:"タイムレース",t:"23.39",w:"-1.4",res:"組5着"},
+  {g:"高2",d:"2021-06-12",meet:"名古屋地区夏季陸上",ev:"4×100mR",rd:"タイムレース",t:"43.50",res:"総合8位",relay:true},
+  {g:"高2",d:"2021-06-13",meet:"名古屋地区夏季陸上",ev:"400m",rd:"タイムレース",t:"51.65",res:"組1着",top:true},
+  {g:"高2",d:"2021-06-13",meet:"名古屋地区夏季陸上",ev:"4×400mR",rd:"タイムレース",t:"3:29.67",res:"総合7位",relay:true},
+  {g:"高2",d:"2021-07-03",meet:"愛知県陸上競技選手権",ev:"100m",rd:"オープン",t:"11.35",w:"+1.4",res:"組6着"},
+  {g:"高2",d:"2021-07-04",meet:"愛知県陸上競技選手権",ev:"300m",rd:"少年A 予選",t:"36.66",res:"組4着"},
+  {g:"高2",d:"2021-10-02",meet:"名古屋地区陸上競技選手権",ev:"400m",rd:"予選",t:"50.97",res:"組3着"},
+  {g:"高2",d:"2021-10-02",meet:"名古屋地区陸上競技選手権",ev:"4×100mR",rd:"予選",t:"DQ",res:"失格",relay:true},
+  {g:"高2",d:"2021-10-03",meet:"名古屋地区陸上競技選手権",ev:"4×400mR",rd:"予選",t:"3:39.92",res:"組4着",relay:true},
+  {g:"高2",d:"2021-10-16",meet:"名古屋地区秋季陸上",ev:"100m",rd:"タイムレース",t:"11.46",w:"-0.8",res:"組4着"},
+  {g:"高2",d:"2021-10-16",meet:"名古屋地区秋季陸上",ev:"300m",rd:"タイムレース",t:"36.35",res:"組1着",top:true},
+  {g:"高2",d:"2021-10-16",meet:"名古屋地区秋季陸上",ev:"4×100mR",rd:"タイムレース",t:"42.88",res:"総合5位",relay:true},
+  {g:"高2",d:"2021-10-16",meet:"名古屋地区秋季陸上",ev:"4×400mR",rd:"タイムレース",t:"3:35.53",res:"総合8位",relay:true},
+  {g:"高2",d:"2021-11",meet:"愛知県高校新人体育大会",ev:"4×400mR",rd:"決勝",t:"—",res:"7位入賞",relay:true,fin:true,top:true,dLabel:"2021"},
+  {g:"高2",d:"2022-03-21",meet:"名古屋プレシーズンゲーム",ev:"300m",rd:"予選",t:"36.02",res:"組1着・決勝へ"},
+  {g:"高2",d:"2022-03-21",meet:"名古屋プレシーズンゲーム",ev:"300m",rd:"決勝",t:"35.96",res:"—"},
+  {g:"高2",d:"2022-03-21",meet:"名古屋プレシーズンゲーム",ev:"4×100mR",rd:"タイムレース",t:"43.81",res:"総合2位",relay:true,top:true},
+
+  {g:"高3",d:"2022-04-02",meet:"第1回 名古屋春季陸上",ev:"400m",rd:"タイムレース",t:"51.25",res:"組6着"},
+  {g:"高3",d:"2022-04-02",meet:"第1回 名古屋春季陸上",ev:"4×100mR",rd:"タイムレース",t:"43.57",res:"総合4位",relay:true},
+  {g:"高3",d:"2022-04-03",meet:"第1回 名古屋春季陸上",ev:"100m",rd:"タイムレース",t:"11.28",w:"+1.4",res:"組3着"},
+  {g:"高3",d:"2022-04-03",meet:"第1回 名古屋春季陸上",ev:"4×400mR",rd:"タイムレース",t:"3:25.78",res:"総合2位",relay:true,top:true},
+  {g:"高3",d:"2022-04-09",meet:"第2回 名古屋春季陸上",ev:"200m",rd:"タイムレース",t:"23.11",w:"-1.5",res:"組5着"},
+  {g:"高3",d:"2022-04-09",meet:"第2回 名古屋春季陸上",ev:"800m",rd:"タイムレース",t:"2:01.67",res:"組6着"},
+  {g:"高3",d:"2022-04-09",meet:"第2回 名古屋春季陸上",ev:"4×100mR",rd:"タイムレース",t:"43.24",res:"総合5位",relay:true},
+  {g:"高3",d:"2022-05-20",meet:"第76回 愛知県高校総体",ev:"400m",rd:"予選",t:"50.38",res:"組2着・準決勝へ",top:true,dLabel:"2022-05"},
+  {g:"高3",d:"2022-05-21",meet:"第76回 愛知県高校総体",ev:"400m",rd:"準決勝",t:"50.34",res:"組7着",top:true,dLabel:"2022-05"},
+  {g:"高3",d:"2022-05-21",meet:"第76回 愛知県高校総体",ev:"4×400mR",rd:"予選",t:"3:19.47",res:"組2着・決勝へ",relay:true,top:true,dLabel:"2022-05"},
+  {g:"高3",d:"2022-05-22",meet:"第76回 愛知県高校総体",ev:"4×400mR",rd:"決勝",t:"3:19.72",res:"8位",relay:true,fin:true,top:true,dLabel:"2022-05"},
+  {g:"高3",d:"2022-06-04",meet:"名古屋地区夏季陸上",ev:"100m",rd:"タイムレース",t:"11.43",w:"-1.0",res:"組4着"}
+];
+
+const GRADES = {"中1":"2017年度","中2":"2018年度","中3":"2019年度","高1":"2020年度","高2":"2021年度","高3":"2022年度"};
+const GRADE_NAME = {"中1":"中学1年","中2":"中学2年","中3":"中学3年","高1":"高校1年","高2":"高校2年","高3":"高校3年"};
+const EV_ORDER = ["100m","200m","300m","400m","800m","4×100mR","4×400mR"];
+
+/* "1:06.54" → 66.54 秒。DQ などは null */
+function sec(t){ if(!/^\d/.test(t)) return null; const p=t.split(":"); return p.length===2 ? (+p[0])*60 + (+p[1]) : +t; }
+function dateKey(d){ const p=d.split("-"); return new Date(+p[0], (p[1]?+p[1]:7)-1, p[2]?+p[2]:15); }
+function shownDate(r){ const d=r.dLabel||r.d; const p=d.split("-"); return p.length===3 ? `${p[0]}/${+p[1]}/${+p[2]}` : p.length===2 ? `${p[0]}/${+p[1]}` : `${p[0]}年`; }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+const sorted = RECORDS.map((r,i)=>({...r,i,s:sec(r.t),dk:dateKey(r.d)})).sort((a,b)=>a.dk-b.dk || a.i-b.i);
+
+/* その時点の自己ベストに印を付ける */
+const bestSoFar = {};
+for(const r of sorted){ if(r.s==null) continue; if(bestSoFar[r.ev]==null || r.s<bestSoFar[r.ev]){ bestSoFar[r.ev]=r.s; r.pb=true; } }
+
+document.getElementById("count").textContent = `${new Set(RECORDS.map(r=>r.d+r.meet)).size}大会・${RECORDS.length}レース`;
+
+/* 自己ベスト */
+(function(){
+  const box=document.getElementById("pbs"); const html=[];
+  for(const ev of EV_ORDER){
+    const list=sorted.filter(r=>r.ev===ev && r.s!=null); if(!list.length) continue;
+    const b=list.reduce((a,c)=>c.s<a.s?c:a);
+    html.push(`<div class="pb${ev==="400m"?" star":""}"><div class="ev">${ev}</div><div class="mark">${b.t}</div><div class="meta">${b.w?`風 ${b.w}　`:""}${shownDate(b)}<br>${esc(b.meet)}</div></div>`);
+  }
+  box.innerHTML=html.join("");
+})();
+
+
+/* 大会記録一覧 */
+let filter="all";
+function drawYears(){
+  const box=document.getElementById("years"); let html="";
+  for(const g of Object.keys(GRADES)){
+    const rows=sorted.filter(r=>r.g===g && (filter==="all" || (filter==="relay")===!!r.relay));
+    if(!rows.length) continue;
+    html+=`<div class="year"><h3><span class="g">${GRADE_NAME[g]}</span><span class="y">${GRADES[g]}・${rows.length}レース</span></h3><div class="tablewrap"><table><thead><tr><th>日付</th><th>大会</th><th>種目</th><th>ラウンド</th><th>記録</th><th>風</th><th>結果</th></tr></thead><tbody>`;
+    for(const r of rows){
+      html+=`<tr class="${r.fin?"fin":""}"><td class="date">${shownDate(r)}</td><td>${esc(r.meet)}</td><td>${r.ev}${r.relay?'<span class="tag relay">リレー</span>':""}</td><td>${esc(r.rd)}</td><td class="num">${r.t}${r.pb?'<span class="tag pb">PB</span>':""}</td><td>${r.w||"—"}</td><td class="res${r.top?" top":""}">${esc(r.res)}</td></tr>`;
+    }
+    html+=`</tbody></table></div></div>`;
+  }
+  box.innerHTML=html;
+}
+document.getElementById("filters").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; filter=b.dataset.f; document.querySelectorAll("#filters button").forEach(x=>x.setAttribute("aria-pressed",x===b)); drawYears(); });
+drawYears();
+</script>
+</body>
+</html>
