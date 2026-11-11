@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://paripikoume-sudo.github.io/sitemap.xml
