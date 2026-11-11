@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>マインドマップ（見るだけ版・サンプル）｜牧野祥英</title>
+<meta name="description" content="自分用に作っているマインドマップツールの見るだけ版。架空の「一人旅の計画」を題材に、型（右へ・左右・ツリー）や配色の切り替え、枝のたたみ・ひらきを試せます。">
+<link rel="canonical" href="https://paripikoume-sudo.github.io/tools/mindmap/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="牧野祥英">
+<meta property="og:title" content="マインドマップ（見るだけ版・サンプル）">
+<meta property="og:description" content="自分用に作っているマインドマップツールの見るだけ版。型や配色を切り替えて眺められます。">
+<meta property="og:url" content="https://paripikoume-sudo.github.io/tools/mindmap/">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Zen+Old+Mincho:wght@400;600&display=swap">
+<style>
+/* 見るだけ版。配色と型は、自分用の編集版（マインドマップ）に合わせている */
+:root{
+  --ink:#141113;--panel:#201a1e;--panel-2:#2b2328;--line:#3b3237;--text:#ede6e1;--muted:#a2989a;--accent:#eca35a;
+  --root:#3f3541;--root-fg:#ede6e1;
+  --f-map:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --f-ui:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  color-scheme:dark;
+}
+:root[data-mt="navy"]{--ink:#181735;--panel:#22214a;--panel-2:#2c2a5a;--line:#3b3973;--text:#f4f2ff;--muted:#a9a6cc;--accent:#e98a8a;--root:#ffffff;--root-fg:#1b1a33;--f-map:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif}
+:root[data-mt="light"]{--ink:#ffffff;--panel:#f5f5f8;--panel-2:#e9e9f0;--line:#d8d8e2;--text:#1d1d29;--muted:#5f5f6e;--accent:#d85a10;--root:#111118;--root-fg:#ffffff;--f-map:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;color-scheme:light}
+:root[data-mt="cream"]{--ink:#fbf6ec;--panel:#f3ebdc;--panel-2:#eadfca;--line:#ddd0b8;--text:#2d261d;--muted:#6f6454;--accent:#c4721d;--root:#3a3128;--root-fg:#fbf6ec;--f-map:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;color-scheme:light}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--ink);color:var(--text);font-family:var(--f-ui);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+a{color:inherit}
+#app{position:relative;height:100%;overflow:hidden}
+
+#stage{position:absolute;inset:0;overflow:hidden;touch-action:none;cursor:grab}
+#stage.panning{cursor:grabbing}
+#world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#links{position:absolute;left:0;top:0;width:1px;height:1px;overflow:visible;pointer-events:none}
+#links path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.node{position:absolute;left:0;top:0;display:flex;align-items:baseline;gap:.3em;width:max-content;max-width:11em;padding:3px 3px 6px;
+  font-family:var(--f-map);font-size:15px;line-height:1.45;color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere;
+  user-select:none;-webkit-user-select:none;border-radius:6px}
+.node .ic{font-family:var(--f-ui);font-size:.9em;white-space:nowrap}
+.node.bold{font-weight:700}
+.node.hl .t,.node.hl .ic{background:var(--hl);color:var(--hlf);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.node.hl .t{padding:0 2px}
+.node.root{max-width:14em;padding:10px 18px;border-radius:10px;font-family:var(--f-ui);font-weight:700;letter-spacing:.02em;align-items:center;background:var(--root);color:var(--root-fg)}
+.tg{all:unset;position:absolute;right:-24px;bottom:-9px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;
+  background:var(--ink);border:1.5px solid var(--c);font:600 10px/1 var(--f-ui);color:var(--text);cursor:pointer;font-variant-numeric:tabular-nums}
+.tg::after{content:"";position:absolute;inset:-9px}
+.tg:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.node.left .tg{right:auto;left:-24px}
+.node.root .tg{bottom:auto;top:50%;transform:translateY(-50%);right:-26px}
+.node.root.left .tg{right:auto;left:-26px}
+.node.tgb .tg{left:50%;right:auto;top:auto;bottom:-24px;transform:translateX(-50%)}
+.node.root.tgb .tg{top:auto;bottom:-24px;transform:translateX(-50%)}
+
+/* 上の帯 */
+#top{position:absolute;left:0;right:0;top:0;z-index:10;display:flex;align-items:center;gap:8px;
+  padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));
+  background:linear-gradient(var(--ink) 55%,transparent);pointer-events:none}
+#top>*{pointer-events:auto}
+#title{min-width:0;display:flex;flex-direction:column;gap:1px}
+h1{margin:0;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.badge{font-size:11px;color:var(--muted)}
+.spacer{flex:1}
+.grp{display:flex;gap:6px}
+.ib{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:38px;height:38px;padding:0 11px;border-radius:11px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:13px}
+.ib:hover{background:var(--panel-2)}
+.ib[aria-pressed="true"]{background:var(--panel-2);border-color:var(--accent)}
+.ib:focus-visible,.seg button:focus-visible,.preset:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ib svg{width:18px;height:18px}
+
+/* 型・配色パネル */
+#look{position:absolute;z-index:12;top:58px;right:max(16px,env(safe-area-inset-right));width:min(380px,calc(100% - 32px));max-height:calc(100% - 76px);
+  padding:14px;border-radius:14px;background:var(--panel);border:1px solid var(--line);box-shadow:0 10px 30px rgb(0 0 0/.35);display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+#look h2{margin:0 0 8px;font-size:11.5px;font-weight:500;color:var(--muted);letter-spacing:.06em}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:11px;overflow:hidden;background:var(--ink)}
+.seg button{all:unset;cursor:pointer;padding:0 14px;height:34px;display:grid;place-items:center;font-size:12.5px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--panel-2);color:var(--text);font-weight:700}
+.presets{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.preset{all:unset;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--pbg);color:var(--pfg);font-size:12px;font-weight:700}
+.preset span{display:flex;gap:3px}
+.preset i{width:12px;height:12px;border-radius:50%;background:var(--d)}
+.preset[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:1px}
+[hidden]{display:none!important}
+
+/* アウトライン（検索エンジンにも読める本文） */
+#outline{position:absolute;inset:0;overflow-y:auto;padding:76px max(16px,env(safe-area-inset-right)) 48px max(16px,env(safe-area-inset-left));background:var(--ink)}
+#outline .wrap{max-width:760px;margin:0 auto}
+#outline ul{list-style:none;margin:0;padding-left:1.4em;border-left:2px solid var(--line)}
+#outline>.wrap>ul{padding-left:0;border-left:0}
+#outline li{margin:2px 0;font-size:15px;line-height:1.7}
+#outline li>span.t{padding:1px 6px;border-radius:4px}
+#outline .lead{font-size:12.5px;color:var(--muted);line-height:1.8;margin:0 0 14px}
+#srcwrap{position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden}
+
+.credit{font-size:10.5px;color:var(--muted);letter-spacing:.08em;margin:0}
+#about{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:16px max(16px,env(safe-area-inset-right)) 16px max(16px,env(safe-area-inset-left));background:rgb(0 0 0/.55);overflow-y:auto}
+#about .card{width:min(600px,100%);max-height:100%;overflow-y:auto;padding:22px 22px 20px;border-radius:16px;background:var(--panel);border:1px solid var(--line);box-shadow:0 20px 50px rgb(0 0 0/.45)}
+#about h2{margin:6px 0 8px;font-size:19px;line-height:1.45;text-wrap:balance}
+#about h3{margin:16px 0 6px;font-size:13px;color:var(--accent);letter-spacing:.06em}
+#about .lead{margin:0;font-size:14px;line-height:1.8}
+#about ul,#about ol{margin:0;padding-left:1.3em;font-size:13.5px;line-height:1.8}
+#about li{margin:3px 0}
+#about .note{margin:14px 0 16px;font-size:12px;color:var(--muted);line-height:1.7}
+.ib.primary{width:100%;height:44px;background:var(--accent);border-color:var(--accent);color:#1d140c;font-weight:700}
+#hint{position:absolute;z-index:9;left:50%;bottom:14px;transform:translateX(-50%);max-width:calc(100% - 24px);padding:8px 14px;border-radius:999px;
+  background:var(--panel);border:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;line-height:1.5}
+
+@media (max-width:640px){
+  h1{max-width:30vw}
+  .ib .lbl{display:none}
+  .ib{min-width:38px;padding:0 9px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="app">
+  <main id="stage" aria-label="マインドマップ（架空のサンプル）">
+    <div id="world"><svg id="links" aria-hidden="true"></svg><div id="nodes"></div></div>
+  </main>
+
+  <header id="top">
+    <div id="title"><div class="credit">制作・編集 牧野祥英</div><h1>マインドマップ</h1><div class="badge">見るだけ版・架空のサンプル</div></div>
+    <div class="spacer"></div>
+    <div class="grp">
+      <button class="ib" id="btnAbout" type="button" aria-controls="about" title="使い方">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span class="lbl">使い方</span>
+      </button>
+      <button class="ib" id="btnOutline" type="button" aria-pressed="false" title="アウトライン（箇条書き）で見る">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h1M9 6h11M8 12h1M13 12h7M8 18h1M13 18h7"/></svg><span class="lbl">箇条書き</span>
+      </button>
+      <button class="ib" id="btnLook" type="button" aria-expanded="false" aria-controls="look" title="型・配色">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2.2"/><path d="M7.2 12H11c1.5 0 1.5-6 3-6h3M11 12c1.5 0 1.5 6 3 6h3"/><circle cx="19" cy="6" r="1.6"/><circle cx="19" cy="18" r="1.6"/></svg><span class="lbl">型・配色</span>
+      </button>
+      <button class="ib" id="btnFit" type="button" title="全体を表示" aria-label="全体を表示">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <section id="look" hidden aria-label="型・配色">
+    <div><h2>型</h2>
+      <div class="seg" id="layoutSeg">
+        <button type="button" data-l="right" aria-pressed="true">右へ</button>
+        <button type="button" data-l="both" aria-pressed="false">左右</button>
+        <button type="button" data-l="down" aria-pressed="false">ツリー</button>
+      </div>
+    </div>
+    <div><h2>配色セット</h2><div class="presets" id="presets"></div></div>
+  </section>
+
+  <section id="outline" hidden aria-label="アウトライン">
+    <div class="wrap">
+      <p class="lead">制作・編集 牧野祥英。自分用のマインドマップツールを、見るだけの形で置いています。ここに入っているのは架空の「はじめての一人旅」の計画で、実際に使っているマップではありません。</p>
+      <div id="outlineBody"></div>
+    </div>
+  </section>
+
+  <section id="about" aria-labelledby="aboutTitle">
+    <div class="card">
+      <p class="credit">制作・編集 牧野祥英</p>
+      <h2 id="aboutTitle">考えを「枝」で広げて、全体を一目で見るマインドマップ</h2>
+      <p class="lead">真ん中にテーマを置き、思いついたことを枝分かれさせて並べていく道具です。頭の中のごちゃごちゃが、1枚の地図になります。</p>
+      <h3>ここがいいところ</h3>
+      <ul class="pts">
+        <li><b>全体と細部を行き来できる</b>：枝をたたむと大きな流れだけ、ひらくと細かい中身まで見られます。</li>
+        <li><b>見せ方を一瞬で変えられる</b>：右へ広げる・左右に広げる・ツリー（上から下へ）の3つの型と、8つの配色セットを切り替えられます。</li>
+        <li><b>大事なところが目に入る</b>：マーカーやアイコンで、やることや注意点が浮き上がります。</li>
+        <li><b>箇条書きでも読める</b>：同じ中身を、ふつうの箇条書きに切り替えて読めます。</li>
+      </ul>
+      <h3>使い方</h3>
+      <ol class="how">
+        <li>ドラッグで地図を動かし、マウスのホイールや2本指のピンチで拡大・縮小します。</li>
+        <li>枝の先にある丸いボタンを押すと、その先をたたむ・ひらくができます（たたむと中の数が出ます）。</li>
+        <li>右上の「型・配色」で、型と色の組み合わせを切り替えます。</li>
+        <li>「箇条書き」で、文字だけの一覧に切り替わります。迷ったら「全体を表示」（四隅のボタン）を押してください。</li>
+      </ol>
+      <p class="note">中に入っているのは架空の「はじめての一人旅計画」です。見るだけ版なので、書き換えや保存はできません。</p>
+      <button class="ib primary" id="aboutClose" type="button">マップを見る</button>
+    </div>
+  </section>
+
+  <div id="hint">ドラッグ・ピンチで動かす ／ 丸いボタンでたたむ</div>
+</div>
+
+<!-- 本文（地図の元データ）。JSが読み取って図にする。JSなしでもそのまま読める -->
+<div id="srcwrap">
+<ul id="src">
+  <li data-root><span>はじめての一人旅計画</span>
+    <ul>
+      <li><span data-b>行き先</span>
+        <ul>
+          <li><span>海沿いの町</span>
+            <ul>
+              <li><span data-i="♨️">日帰り温泉</span></li>
+              <li><span data-h="y" data-i="🎯">港の朝市をのぞく</span></li>
+              <li><span>夕焼けの見える堤防</span></li>
+            </ul>
+          </li>
+          <li><span>山あいの町</span>
+            <ul>
+              <li><span>ロープウェイで展望台</span></li>
+              <li><span>古い街並みを歩く</span></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li><span data-b>移動</span>
+        <ul>
+          <li><span>電車</span>
+            <ul>
+              <li><span>乗り換えを前の晩に確認</span></li>
+              <li><span data-h="g">帰りの終電をメモ</span></li>
+            </ul>
+          </li>
+          <li><span>バス</span></li>
+          <li><span>レンタサイクル</span></li>
+        </ul>
+      </li>
+      <li><span data-b>食事</span>
+        <ul>
+          <li><span data-i="🍙">朝は市場で買って食べ歩き</span></li>
+          <li><span>ご当地グルメを1つ決めておく</span></li>
+          <li><span>休憩できるカフェ</span></li>
+        </ul>
+      </li>
+      <li><span data-b>持ち物</span>
+        <ul>
+          <li><span data-h="b" data-i="🔋">モバイルバッテリー</span></li>
+          <li><span>着替えは最小限</span></li>
+          <li><span>折りたたみ傘</span></li>
+          <li><span>小銭と現金</span></li>
+        </ul>
+      </li>
+      <li><span data-b>予算</span>
+        <ul>
+          <li><span>交通費</span></li>
+          <li><span>食費</span></li>
+          <li><span>お土産</span></li>
+          <li><span data-h="p" data-i="💡">予備費を1割残す</span></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<noscript><style>#srcwrap{position:static;width:auto;height:auto;padding:80px 20px 20px;color:#ede6e1}#app{display:none}</style></noscript>
+
+<script>
+(() => {
+"use strict";
+const $ = s => document.querySelector(s);
+const stage = $("#stage"), world = $("#world"), svg = $("#links"), nodesEl = $("#nodes");
+
+/* ---------- 配色（自分用の編集版と同じ） ---------- */
+const PALS = {
+  earth:   ["#eca35a","#f0982d","#e0a160","#c9744a","#d9a46a","#8e3326"],
+  vivid:   ["#00aeef","#4f63ff","#7b53f5","#f7672a","#fbbc05","#00ad4f"],
+  rainbow: ["#e8312f","#f4a100","#e6c200","#2fae4f","#2f6fe0","#7b4fe0","#e23ba5"],
+  pastel:  ["#f29e9e","#f5be86","#ead27a","#94cf9f","#8dbcea","#b9a2ec","#efa6cf"],
+  sunset:  ["#e07c7c","#f7ebc0","#d6e6f8","#a9a7ef","#f3d9a8","#9fd8c8"],
+  ocean:   ["#38bdf8","#22d3ee","#34d399","#818cf8","#60a5fa","#2dd4bf"],
+  mono:    ["#3a3a46","#6a6a78","#8e8e9a","#4c4c58","#a6a6b2"]
+};
+const THEMEBG = { dark:"#141113", navy:"#181735", light:"#ffffff", cream:"#fbf6ec" };
+const PRESETS = [
+  {n:"MindNode",theme:"dark",pal:"earth"},{n:"夜の紺",theme:"navy",pal:"sunset"},
+  {n:"ビビッド",theme:"light",pal:"vivid"},{n:"虹色",theme:"light",pal:"rainbow"},
+  {n:"パステル",theme:"cream",pal:"pastel"},{n:"海",theme:"dark",pal:"ocean"},
+  {n:"モノトーン",theme:"light",pal:"mono"},{n:"紺 × 虹",theme:"navy",pal:"rainbow"}
+];
+const MARK = { y:["#fbf1c2","#1b1a2e"], g:["#b9e3c6","#1b1a2e"], b:["#bcd6f5","#1b1a2e"], p:["#f4b9c4","#1b1a2e"], v:["#aaa7f0","#ffffff"] };
+const HG = 40, HG0 = 46, VG = 12;
+
+let layoutKind = "right", preset = 1, view = { x:0, y:0, k:1 };
+
+/* ---------- 本文から木を読み取る ---------- */
+function parse(li, depth){
+  const sp = li.querySelector(":scope > span");
+  const n = { text: sp.textContent.trim(), icon: sp.dataset.i || "", hl: sp.dataset.h || "", bold: "b" in sp.dataset, depth, children: [], collapsed: false };
+  const ul = li.querySelector(":scope > ul");
+  if (ul) ul.querySelectorAll(":scope > li").forEach(c => n.children.push(parse(c, depth + 1)));
+  return n;
+}
+const root = parse($("#src > li"), 0);
+
+/* ---------- 箇条書き表示 ---------- */
+function outlineHTML(n){
+  const esc = s => s.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  let h = "<li>" + (n.icon ? esc(n.icon) + " " : "") + "<span class=\"t\"" +
+    (n.hl ? " style=\"background:" + MARK[n.hl][0] + ";color:" + MARK[n.hl][1] + "\"" : "") + ">" +
+    (n.depth <= 1 ? "<b>" + esc(n.text) + "</b>" : esc(n.text)) + "</span>";
+  if (n.children.length) h += "<ul>" + n.children.map(outlineHTML).join("") + "</ul>";
+  return h + "</li>";
+}
+$("#outlineBody").innerHTML = "<ul>" + outlineHTML(root) + "</ul>";
+
+/* ---------- 描画 ---------- */
+function applyLook(){
+  const p = PRESETS[preset];
+  document.documentElement.dataset.mt = p.theme === "dark" ? "" : p.theme;
+  if (p.theme === "dark") document.documentElement.removeAttribute("data-mt");
+  const pal = PALS[p.pal];
+  root.children.forEach((c, i) => paint(c, pal[i % pal.length]));
+}
+function paint(n, color){ n.color = color; n.children.forEach(c => paint(c, color)); }
+
+function mkNode(n){
+  const d = document.createElement("div");
+  d.className = "node" + (n.depth === 0 ? " root" : "") + (n.bold ? " bold" : "") + (n.hl ? " hl" : "");
+  d.style.setProperty("--c", n.color || "var(--text)");
+  if (n.hl) { d.style.setProperty("--hl", MARK[n.hl][0]); d.style.setProperty("--hlf", MARK[n.hl][1]); }
+  if (n.icon) { const i = document.createElement("span"); i.className = "ic"; i.textContent = n.icon; d.appendChild(i); }
+  const t = document.createElement("span"); t.className = "t"; t.textContent = n.text; d.appendChild(t);
+  if (n.children.length) {
+    const b = document.createElement("button");
+    b.className = "tg"; b.type = "button";
+    b.addEventListener("pointerdown", e => e.stopPropagation());
+    b.addEventListener("click", e => { e.stopPropagation(); n.collapsed = !n.collapsed; relayout(); });
+    d.appendChild(b); n.btn = b;
+  }
+  n.el = d; return d;
+}
+function count(n){ let c = 0; n.children.forEach(k => c += 1 + count(k)); return c; }
+function build(){
+  nodesEl.innerHTML = "";
+  (function walk(n){ nodesEl.appendChild(mkNode(n)); n.children.forEach(walk); })(root);
+}
+function measure(){
+  (function walk(n){ n.w = n.el.offsetWidth; n.h = n.el.offsetHeight; n.children.forEach(walk); })(root);
+}
+const vis = n => (n.collapsed ? [] : n.children);
+
+/* 横向きのレイアウト（右・左） */
+function subH(n){
+  const k = vis(n);
+  if (!k.length) return (n.sh = n.h);
+  const s = k.reduce((a, c) => a + subH(c), 0) + VG * (k.length - 1);
+  return (n.sh = Math.max(n.h, s));
+}
+function placeH(n, edgeX, cy, dir){
+  n.dir = dir;
+  n.x = dir > 0 ? edgeX : edgeX - n.w; n.y = cy - n.h / 2;
+  const k = vis(n); if (!k.length) return;
+  const total = k.reduce((a, c) => a + c.sh, 0) + VG * (k.length - 1);
+  let top = cy - total / 2;
+  const nx = dir > 0 ? n.x + n.w + (n.depth === 0 ? HG0 : HG) : n.x - (n.depth === 0 ? HG0 : HG);
+  k.forEach(c => { placeH(c, nx, top + c.sh / 2, dir); top += c.sh + VG; });
+}
+/* 縦向きのレイアウト（ツリー）：根と1段目は横に並べ、2段目から下は縦にぶら下げる */
+const IND = 22;
+function hangW(n){
+  const k = vis(n);
+  n.hw = Math.max(n.w, ...k.map(c => IND + hangW(c)), 0);
+  return n.hw;
+}
+function hang(n, x, y){
+  n.x = x; n.y = y; n.dir = 1;
+  let cy = y + n.h + 4;
+  vis(n).forEach(c => { cy = hang(c, x + IND, cy) + 6; });
+  return Math.max(y + n.h, cy - 6);
+}
+function subW(n){
+  const k = vis(n);
+  if (n.depth >= 1) return (n.sw = hangW(n));
+  if (!k.length) return (n.sw = n.w);
+  const s = k.reduce((a, c) => a + subW(c), 0) + 28 * (k.length - 1);
+  return (n.sw = Math.max(n.w, s));
+}
+function placeV(n, cx, top){
+  if (n.depth >= 1) { hang(n, cx - n.sw / 2, top); return; }
+  n.x = cx - n.w / 2; n.y = top; n.dir = 1;
+  const k = vis(n); if (!k.length) return;
+  const total = k.reduce((a, c) => a + c.sw, 0) + 28 * (k.length - 1);
+  let left = cx - total / 2;
+  k.forEach(c => { placeV(c, left + c.sw / 2, top + n.h + 54); left += c.sw + 28; });
+}
+
+function layout(){
+  root.dir = 0;
+  if (layoutKind === "down") {
+    subW(root); placeV(root, 0, 0);
+  } else if (layoutKind === "both") {
+    const k = vis(root); k.forEach(subH);
+    const tot = k.reduce((a, c) => a + c.sh, 0);
+    let acc = 0; const R = [], L = [];
+    k.forEach(c => { (acc + c.sh / 2 <= tot / 2 ? R : L).push(c); acc += c.sh; });
+    root.x = -root.w / 2; root.y = -root.h / 2;
+    const place = (arr, dir) => {
+      const t = arr.reduce((a, c) => a + c.sh, 0) + VG * Math.max(0, arr.length - 1);
+      let top = -t / 2;
+      const ex = dir > 0 ? root.w / 2 + HG0 : -root.w / 2 - HG0;
+      arr.forEach(c => { placeH(c, ex, top + c.sh / 2, dir); top += c.sh + VG; });
+    };
+    place(R, 1); place(L, -1);
+  } else {
+    subH(root); placeH(root, 0, 0, 1);
+  }
+}
+
+/* 枝を描く */
+function path(p, c){
+  const down = layoutKind === "down";
+  let x1, y1, x2, y2, d;
+  if (down) {
+    if (p.depth >= 1) {          // ぶら下げ：親の左下から縦に降りて、子の手前で曲がる
+      x1 = p.x + 11; y1 = p.y + p.h; x2 = c.x; y2 = c.y + c.h / 2;
+      return "M" + x1 + " " + y1 + "V" + (y2 - 9) + "Q" + x1 + " " + y2 + " " + (x1 + 9) + " " + y2 + "H" + x2;
+    }
+    x1 = p.x + p.w / 2; y1 = p.y + p.h; x2 = c.x + c.w / 2; y2 = c.y;
+    const m = (y1 + y2) / 2;
+    return "M" + x1 + " " + y1 + "C" + x1 + " " + m + " " + x2 + " " + m + " " + x2 + " " + y2;
+  }
+  const dir = c.dir || 1;
+  x1 = dir > 0 ? p.x + p.w : p.x;
+  y1 = p.depth === 0 ? p.y + p.h / 2 : p.y + p.h - 2;
+  x2 = dir > 0 ? c.x : c.x + c.w; y2 = c.y + c.h - 2;
+  const m = (x1 + x2) / 2;
+  d = "M" + x1 + " " + y1 + "C" + m + " " + y1 + " " + m + " " + y2 + " " + x2 + " " + y2;
+  return d + "L" + (dir > 0 ? c.x + c.w : c.x) + " " + y2;
+}
+function paintLinks(){
+  const out = [];
+  (function walk(n){
+    vis(n).forEach(c => {
+      const w = c.depth === 1 ? 4.5 : c.depth === 2 ? 3 : 2;
+      out.push('<path d="' + path(n, c) + '" stroke="' + c.color + '" stroke-width="' + w + '"/>');
+      walk(c);
+    });
+  })(root);
+  svg.innerHTML = out.join("");
+}
+function apply(){
+  const hidden = new Set();
+  (function walk(n, h){ if (h) hidden.add(n); n.children.forEach(c => walk(c, h || n.collapsed)); })(root, false);
+  (function walk(n){
+    n.el.style.display = hidden.has(n) ? "none" : "";
+    n.el.style.transform = "translate(" + Math.round(n.x) + "px," + Math.round(n.y) + "px)";
+    n.el.classList.toggle("left", n.dir < 0);
+    n.el.classList.toggle("tgb", layoutKind === "down" && n.depth === 0);
+    if (n.btn) { n.btn.textContent = n.collapsed ? count(n) : "−"; n.btn.setAttribute("aria-label", (n.collapsed ? "ひらく：" : "たたむ：") + n.text); n.btn.setAttribute("aria-expanded", String(!n.collapsed)); }
+    n.children.forEach(walk);
+  })(root);
+  paintLinks();
+}
+function relayout(keepView){ layout(); apply(); if (!keepView) fit(); }
+
+/* ---------- 表示位置・拡大縮小 ---------- */
+function setView(){ world.style.transform = "translate(" + view.x + "px," + view.y + "px) scale(" + view.k + ")"; }
+function bounds(){
+  let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  (function walk(n){
+    if (n.el.style.display === "none") return;
+    x0 = Math.min(x0, n.x - 30); y0 = Math.min(y0, n.y - 10); x1 = Math.max(x1, n.x + n.w + 30); y1 = Math.max(y1, n.y + n.h + 20);
+    vis(n).forEach(walk);
+  })(root);
+  return { x0, y0, x1, y1 };
+}
+function fit(){
+  const b = bounds(), W = stage.clientWidth, H = stage.clientHeight, top = 64, bottom = 56;
+  const k = Math.min(1.25, (W - 32) / (b.x1 - b.x0), (H - top - bottom) / (b.y1 - b.y0));
+  view.k = Math.max(.25, k);
+  view.x = (W - (b.x1 - b.x0) * view.k) / 2 - b.x0 * view.k;
+  view.y = top + (H - top - bottom - (b.y1 - b.y0) * view.k) / 2 - b.y0 * view.k;
+  setView();
+}
+function zoomAt(px, py, f){
+  const k = Math.min(3, Math.max(.2, view.k * f)), r = k / view.k;
+  view.x = px - (px - view.x) * r; view.y = py - (py - view.y) * r; view.k = k; setView();
+}
+const ptrs = new Map(); let last = null, pinch = 0;
+stage.addEventListener("pointerdown", e => {
+  stage.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+  stage.classList.add("panning"); last = { x:e.clientX, y:e.clientY };
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = Math.hypot(a.x - b.x, a.y - b.y); }
+});
+stage.addEventListener("pointermove", e => {
+  if (!ptrs.has(e.pointerId)) return;
+  ptrs.set(e.pointerId, { x:e.clientX, y:e.clientY });
+  if (ptrs.size === 2) {
+    const [a, b] = [...ptrs.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (pinch) zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, d / pinch);
+    pinch = d; return;
+  }
+  view.x += e.clientX - last.x; view.y += e.clientY - last.y; last = { x:e.clientX, y:e.clientY }; setView();
+});
+const end = e => { ptrs.delete(e.pointerId); pinch = 0; if (!ptrs.size) stage.classList.remove("panning"); else { const p = [...ptrs.values()][0]; last = { x:p.x, y:p.y }; } };
+stage.addEventListener("pointerup", end); stage.addEventListener("pointercancel", end);
+stage.addEventListener("wheel", e => { e.preventDefault(); zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * (e.ctrlKey ? .01 : .0015))); }, { passive:false });
+
+/* ---------- パネル ---------- */
+function drawPresets(){
+  const box = $("#presets"); box.innerHTML = "";
+  PRESETS.forEach((p, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "preset"; b.setAttribute("aria-pressed", String(i === preset));
+    b.style.setProperty("--pbg", THEMEBG[p.theme]); b.style.setProperty("--pfg", p.theme === "dark" || p.theme === "navy" ? "#f1ece8" : "#1d1d29");
+    b.innerHTML = p.n + "<span>" + PALS[p.pal].slice(0, 5).map(c => '<i style="--d:' + c + '"></i>').join("") + "</span>";
+    b.addEventListener("click", () => { preset = i; applyLook(); rebuildColors(); drawPresets(); });
+    box.appendChild(b);
+  });
+}
+function rebuildColors(){
+  (function walk(n){ n.el.style.setProperty("--c", n.color || "var(--text)"); n.children.forEach(walk); })(root);
+  apply();
+}
+$("#btnLook").addEventListener("click", () => {
+  const l = $("#look"); l.hidden = !l.hidden; $("#btnLook").setAttribute("aria-expanded", String(!l.hidden));
+});
+$("#layoutSeg").addEventListener("click", e => {
+  const b = e.target.closest("button[data-l]"); if (!b) return;
+  layoutKind = b.dataset.l;
+  document.querySelectorAll("#layoutSeg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  relayout();
+});
+$("#btnFit").addEventListener("click", fit);
+$("#btnOutline").addEventListener("click", () => {
+  const o = $("#outline"); o.hidden = !o.hidden; $("#btnOutline").setAttribute("aria-pressed", String(!o.hidden));
+  $("#hint").hidden = !o.hidden;
+});
+const about = $("#about");
+const closeAbout = () => { about.hidden = true; $("#btnAbout").focus(); };
+$("#aboutClose").addEventListener("click", closeAbout);
+about.addEventListener("click", e => { if (e.target === about) closeAbout(); });
+$("#btnAbout").addEventListener("click", () => { about.hidden = false; $("#aboutClose").focus(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !about.hidden) { closeAbout(); return; } if (e.key === "Escape") { $("#look").hidden = true; $("#btnLook").setAttribute("aria-expanded", "false"); } });
+
+/* ---------- 起動 ---------- */
+function init(){
+  applyLook(); build(); measure(); relayout(); drawPresets();
+}
+init();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); relayout(); });
+let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(fit, 150); });
+})();
+</script>
+</body>
+</html>
